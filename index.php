@@ -1,13 +1,17 @@
 <?php
 require 'vendor/autoload.php';
-// require_once 'dompdf/autoload.inc.php';
+require './holidaysAPI.php';
+require './locateDays.php';
+
 use Dompdf\Dompdf;
 
 date_default_timezone_set('America/Sao_Paulo');
 
 $currentMonth = date('n');
 $currentYear = date('Y');
+$data = [];
 $numberOfDays;
+
 $monthNamesPt = [
   1 => 'Janeiro',
   2 => 'Fevereiro',
@@ -22,8 +26,6 @@ $monthNamesPt = [
   11 => 'Novembro',
   12 => 'Dezembro'
 ];
-
-$data = [];
 
 switch ($currentMonth) {
   case 1: // January
@@ -53,66 +55,6 @@ switch ($currentMonth) {
 }
 
 locateDays($numberOfDays, $data);
-
-function locateDays($numberOfDays, &$data) // Passa o array por referência
-{
-  for ($day = 1; $day <= $numberOfDays; $day++) {
-    $dayOfMonth = "$day";
-    $dateString = date('Y-m') . '-' . $dayOfMonth;
-
-    $dayOfWeek = date('w', strtotime($dateString));
-
-    $entryAndExit = [
-      "option1" => ["entry" => "07:50", "exit" => "13:50"],
-      "option2" => ["entry" => "07:55", "exit" => "13:55"],
-      "option3" => ["entry" => "08:00", "exit" => "14:00"],
-      "option4" => ["entry" => "08:05", "exit" => "14:05"],
-      "option5" => ["entry" => "08:10", "exit" => "14:10"]
-    ];
-
-    switch ($dayOfWeek) {
-      case 0:
-        // echo "$day Domingo\n";
-        break;
-      case 1:
-        $option = array_rand($entryAndExit);
-
-        // echo "$day ".$entryAndExit[$option]["entry"]."-". $entryAndExit[$option]["exit"]."\n";
-        break;
-      case 2:
-        $option = array_rand($entryAndExit, 1);
-
-        // echo "$day " .$entryAndExit[$option]["entry"] . " " . $entryAndExit[$option]["exit"] . "\n";
-        break;
-      case 3:
-        $option = array_rand($entryAndExit, 1);
-
-        // echo "$day " .$entryAndExit[$option]["entry"]." ". $entryAndExit[$option]["exit"]."\n";
-        break;
-      case 4:
-        $option = array_rand($entryAndExit, 1);
-
-        // echo "$day " .$entryAndExit[$option]["entry"] . " " . $entryAndExit[$option]["exit"] . "\n";
-        break;
-      case 5:
-        $option = array_rand($entryAndExit, 1);
-
-        // echo "$day " .$entryAndExit[$option]["entry"] . " " . $entryAndExit[$option]["exit"] . "\n";
-        break;
-      case 6:
-        $option = array_rand($entryAndExit, 1);
-
-        // echo "$day Sabado\n";
-        break;
-    }
-    $data[$day] = [
-      "day" => $day,
-      "dayOfWeek" => $dayOfWeek,
-      "entry" => $entryAndExit[$option]["entry"],
-      "exit" => $entryAndExit[$option]["exit"]
-    ];
-  }
-}
 
 ob_start();
 ?>
@@ -156,20 +98,19 @@ ob_start();
       font-size: 12px;
     }
 
-    p {
+    td>p {
       text-align: left;
       margin-top: 10px;
       font-size: 12px;
     }
 
-    .signature {
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      text-align: center; 
-      margin-top: 10px; 
-      font-size: 10px;"
+    .signature{
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
     }
+
+    
   </style>
 </head>
 
@@ -209,9 +150,36 @@ ob_start();
       <?php foreach ($data as $dayData): ?>
         <tr>
           <td>
-            <?= $dayData["day"] ?>
+            <?php
+              $day = $dayData["day"];
+              $month = $currentMonth;
+              $isHoliday = false;
+
+              for ($i = 0; $i < count($holidayDay); $i++) 
+              {
+                if ($holidayMonth[$i] == $month && $holidayDay[$i] == $day) 
+                {
+                  $isHoliday = true;
+                  break;
+                }
+              }
+
+              if ($isHoliday) 
+              {
+                echo $day;
+              } 
+              else 
+              {
+                echo $dayData["day"];
+              }
+            ?>
           </td>
-          <?php if ($dayData["dayOfWeek"] == 0): ?>
+          <?php if ($isHoliday): ?>
+            <td>Feriado</td>
+            <td>-</td>
+            <td>-</td>
+            <td>Feriado</td>
+          <?php elseif ($dayData["dayOfWeek"] == 0): ?>
             <td>Domingo</td>
             <td>-</td>
             <td>-</td>
@@ -233,6 +201,7 @@ ob_start();
           <?php endif; ?>
         </tr>
       <?php endforeach; ?>
+
       <tr>
         <td colspan="5">
           <p><strong>REGISTRAR AQUI ATESTADOS, JUSTIFICATIVAS E O QUAISQUER SITUAÇÃO ANORMAL.</strong></p>
@@ -246,10 +215,10 @@ ob_start();
       </tr>
 
     </table>
-    <div class="signature">
-      <div>_______________________<br>ESTAGIÁRIO</div>
-      <div>_______________________<br>RESPONSÁVEL</div>
-    </div>
+    <br><br>
+    <pre>  _________________________    _________________________</pre>
+    <pre>         ESTAGIÁRIO                   RESPONSÁVEL       </pre>
+    
   </div>
 </body>
 
@@ -257,19 +226,9 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-
-// Crie uma nova instância do Dompdf
 $dompdf = new Dompdf();
-
-// Carregue o HTML no Dompdf
 $dompdf->loadHtml($content);
-
-// Defina o tamanho do papel e orientação (opcional)
 $dompdf->setPaper('A4', 'portrait');
-
-// Renderize o PDF
 $dompdf->render();
-
-// Saída do PDF
-$dompdf->stream('registro_estagio.pdf', ['Attachment' => false]);
+$dompdf->stream('raphael'.date('m').'.pdf', ['Attachment' => false]);
 ?>
