@@ -1,8 +1,10 @@
 <?php
   //Holidays of Santa Catarina-Brazil 
   $response = file_get_contents('https://api.invertexto.com/v1/holidays/2023?token=4739|f4VZWlNjngV6z3Dk3J3XGYEyhJzEy86N&state=SC');
+  
   $holidayMonth = [];
   $holidayDay = [];
+  
   if ($response !== false) 
   {  
     $data = json_decode($response);
@@ -18,7 +20,7 @@
         $month = $month->format('m');
 
         
-        if ($holiday->type == 'feriado') 
+        if ($holiday->type == 'feriado')
         {
           array_push($holidayDay, $day);
           array_push($holidayMonth, $month);

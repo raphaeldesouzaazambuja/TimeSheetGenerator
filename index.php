@@ -12,15 +12,7 @@ $currentYear = date('Y');
 $data = [];
 $numberOfDays;
 
-$monthNamesPt = [
-  1 => 'Janeiro',
-  2 => 'Fevereiro',
-  3 => 'Março',
-  4 => 'Abril',
-  5 => 'Maio',
-  6 => 'Junho',
-  7 => 'Julho',
-  8 => 'Agosto',
+$monthNamesPt = [ 1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
   9 => 'Setembro',
   10 => 'Outubro',
   11 => 'Novembro',
@@ -230,5 +222,7 @@ $dompdf = new Dompdf();
 $dompdf->loadHtml($content);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$dompdf->stream('raphael'.date('m').'.pdf', ['Attachment' => false]);
+$pdfPath = "files/raphael.pdf";
+
+file_put_contents($pdfPath, $dompdf->output());
 ?>
