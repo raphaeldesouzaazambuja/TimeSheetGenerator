@@ -111,7 +111,7 @@ ob_start();
     <table>
       <tr>
         <th colspan="1"><strong>NOME DO ESTAGIÁRIO</strong></th>
-        <td colspan="1">Raphael de Souza Azambuja</td>
+        <td colspan="1">maxuel</td>
       </tr>
       <tr>
         <th colspan="1"><strong>LOCAL DE TRABALHO</strong></th>
@@ -222,7 +222,13 @@ $dompdf = new Dompdf();
 $dompdf->loadHtml($content);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$pdfPath = "files/raphael.pdf";
+
+if (!is_dir("./files")){
+  mkdir("./files");
+  echo "sus";
+}
+
+$pdfPath = "files/maxuel.pdf";
 
 file_put_contents($pdfPath, $dompdf->output());
 ?>
