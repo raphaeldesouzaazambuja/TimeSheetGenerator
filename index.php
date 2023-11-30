@@ -13,9 +13,11 @@ $data = [];
 $numberOfDays;
 
 $intern = [
-  "Raphael de Souza Azambuja" => ["shift" => 1],
-  "Gustavo Albônico Gonçalves" => ["shift" => 2], 
-  "Gustavo Anselmo" => ["shift" => 3]
+  "Raphael de Souza Azambuja" => ["shift" => 1, "hour" => 1],
+  "Gustavo Albônico Gonçalves" => ["shift" => 2, "hour" => 2],
+  "Gustavo Gonçalves" => ["shift" => 3, "hour" => 1],
+  "Paulo Vinícius dos Santos Cardoso" => ["shift" => 1, "hour" => 1],
+  "André Fernando Vieira Noguera" => ["shift" => 1, "hour" => 1]
 ];
 
 $monthNamesPt = [ 
@@ -60,9 +62,22 @@ switch ($currentMonth) {
     break;
 }
 
-foreach ($intern as $name => $shift):
+foreach ($intern as $name => $key):
 
-locateDays($numberOfDays, $data, $shift["shift"]);
+locateDays($numberOfDays, $data, $key["shift"]);
+
+switch ($key["hour"]) 
+    {
+      case 1:
+        $hour = "08h-14h";
+        break;
+      case 2:
+        $hour = "11h-17h";
+        break;
+      case 3:
+        $hour = "13h-17h";
+        break;
+    }
 
 ob_start();
 ?>
@@ -135,7 +150,7 @@ ob_start();
       </tr>
       <tr>
         <th colspan="1"><strong>HORÁRIO DE ESTÁGIO</strong></th>
-        <td colspan="1">8h-14h</td>
+        <td colspan="1"> <?= $hour ?> </td>
       </tr>
       <tr>
         <th colspan="1"><strong>RESPONSÁVEL DO SETOR</strong></th>
