@@ -12,7 +12,21 @@ $currentYear = date('Y');
 $data = [];
 $numberOfDays;
 
-$monthNamesPt = [ 1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril', 5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+$intern = [
+  "Raphael de Souza Azambuja" => ["shift" => 1],
+  "Gustavo Albônico Gonçalves" => ["shift" => 2], 
+  "Gustavo Anselmo" => ["shift" => 3]
+];
+
+$monthNamesPt = [ 
+  1 => 'Janeiro', 
+  2 => 'Fevereiro', 
+  3 => 'Março', 
+  4 => 'Abril', 
+  5 => 'Maio', 
+  6 => 'Junho', 
+  7 => 'Julho', 
+  8 => 'Agosto',
   9 => 'Setembro',
   10 => 'Outubro',
   11 => 'Novembro',
@@ -46,7 +60,9 @@ switch ($currentMonth) {
     break;
 }
 
-locateDays($numberOfDays, $data);
+foreach ($intern as $name => $shift):
+
+locateDays($numberOfDays, $data, $shift["shift"]);
 
 ob_start();
 ?>
@@ -105,13 +121,13 @@ ob_start();
     
   </style>
 </head>
-
+  
 <body>
   <div class="container">
     <table>
       <tr>
         <th colspan="1"><strong>NOME DO ESTAGIÁRIO</strong></th>
-        <td colspan="1">maxuel</td>
+          <td colspan="1"><?= $name ?></td>
       </tr>
       <tr>
         <th colspan="1"><strong>LOCAL DE TRABALHO</strong></th>
@@ -214,6 +230,8 @@ ob_start();
   </div>
 </body>
 
+
+
 </html>
 
 <?php
@@ -223,12 +241,14 @@ $dompdf->loadHtml($content);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
-if (!is_dir("./files")){
+if (!is_dir("./files"))
+{
   mkdir("./files");
-  echo "sus";
 }
 
-$pdfPath = "files/maxuel.pdf";
+$pdfPath = "files/$name.pdf";
 
 file_put_contents($pdfPath, $dompdf->output());
 ?>
+<?php endforeach; ?>
+

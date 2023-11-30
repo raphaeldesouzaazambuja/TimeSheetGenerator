@@ -19,7 +19,6 @@
         $day = $day->format('d');
         $month = $month->format('m');
 
-        
         if ($holiday->type == 'feriado')
         {
           array_push($holidayDay, $day);
